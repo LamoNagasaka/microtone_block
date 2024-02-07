@@ -1,3 +1,4 @@
+
 const audioContext = new (window.AudioContext || window.webkitAudioContext)(); //Web Audio APIを使用して音声を操作するためのAudio Contextを作成する
 const keyMap = '1234567890QWERTYUIOPASDFGHJKLZXCVBNM'.split(''); //キーボードのキーと対応する周波数をマッピングするための'keyMap'を定義
 let frequencies = [];  //生成された周波数を格納するための'frequencies'を定義する
@@ -46,7 +47,7 @@ function updateKeyboardLayout(division) {
     notesDiv.innerHTML = '';
     freqDiv.innerHTML = ''; // 周波数表示エリアをクリア
     const keyWidth = 50; // 鍵盤の幅
-    const keyHeight = 120; // 鍵盤の高さ
+    const keyHeight = 200; // 鍵盤の高さ
     const margin =5 ; //鍵盤の間隔
 
     for (let i = 0; i < division; i++) {
