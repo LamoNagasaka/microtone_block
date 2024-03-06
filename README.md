@@ -1,4 +1,4 @@
 # simple-microtonal-block
 simple block
 
-31edoまでの鍵盤インタフェース
+31edoまでのブロック型鍵盤
