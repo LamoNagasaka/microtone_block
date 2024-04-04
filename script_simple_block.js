@@ -123,6 +123,12 @@ function handleKeyDown(event) {
     if (keyIndex >= 0 && keyIndex < frequencies.length && !oscillators[key]) {
         startPlayingFrequency(frequencies[keyIndex], key);
     }
+    
+    // 押された鍵盤の色を変更する
+    const noteDiv = document.getElementsByClassName('note')[keyIndex];
+    noteDiv.style.background = 'lightgray'; // 背景色を変更
+    noteDiv.style.border = 'solid black 2px'; // 枠の色を変更
+    
 }
 
 //キーが離されたときに呼び出される関数
@@ -136,6 +142,13 @@ function handleKeyUp(event) {
     if (oscillators[key]) {
         stopPlayingFrequency(key);
     }
+
+     // 鍵盤の色付けを元に戻す
+    const keyIndex = keyMap.indexOf(key);
+    const noteDiv = document.getElementsByClassName('note')[keyIndex];
+    noteDiv.style.background = 'white'; // 背景色を元に戻す
+    noteDiv.style.border = 'solid black 1px'; // 枠の色を元に戻す
+    
 }
 
 
