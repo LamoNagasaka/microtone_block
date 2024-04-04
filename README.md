@@ -3,4 +3,4 @@ simple block
 
 31edoまでのブロック型鍵盤
 
-サイン音
+
