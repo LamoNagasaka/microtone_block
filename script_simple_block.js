@@ -99,22 +99,6 @@ function updateKeyboardLayout(division) { //引数divisionを受け取る(キー
     }
 }
 
-//キーがクリック（またはタップ）されると特定の周波数の音を再生
-//オシレーターを作成し、周波数を設定し、オーディオコンテキストの宛先に接続し、再生を開始し、0.5秒後に停止
-function playFrequency(frequency, keyIndex) {
-    
-    const oscillator = audioContext.createOscillator();
-    oscillator.type = 'sine'; //サイン波
-    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-    oscillator.connect(audioContext.destination);
-    oscillator.start(); //再生
-    oscillator.stop(audioContext.currentTime + 0.5); //0.5秒後に停止
-    highlightKey(keyIndex); //再生されたキーを強調表示する
-
-    checkChord(); //和音が鳴らされたかをチェック
-
-}
-
 ////キーボード制御
 //キーが押されたときに呼び出される関数
 function handleKeyDown(event) { 
