@@ -1,3 +1,5 @@
+////Web Audio APIを使う
+//AudioContextクラスのコンストラクタを呼び出して，AudioContextインスタンスを生成する必要がある．
 const audioContext = new (window.AudioContext || window.webkitAudioContext)(); //Web Audio APIを使用して音声を操作するためのAudio Contextを作成する
 
 const keyMap = '1234567890QWERTYUIOPASDFGHJKLZXCVBNM'.split(''); //キーボードのキーと対応する周波数をマッピングするための'keyMap'を定義
@@ -11,15 +13,66 @@ let chord = []; //和音を保存するための配列
 let chordCounts = {}; ////和音の出現頻度を保存するオブジェクト
 
 
-//音を再生するためのオシレーターを作成し，再生する
-function startPlayingFrequency(frequency, key) {
+// //音を再生するためのオシレーターを作成し，再生する
+// function startPlayingFrequency(frequency, key) {
 
-    const oscillator = audioContext.createOscillator();
-    oscillator.type = 'sine'; //オシレーターのタイプをサイン波に設定
-    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-    oscillator.connect(audioContext.destination); //オシレーターをオーディオの出力に接続する
-    oscillator.start(); //オシレータを再生する
-    oscillators[key] = oscillator; // オシレータをosillatorsオブジェクトに保存
+//     const oscillator = audioContext.createOscillator();
+//     oscillator.type = 'sine'; //オシレーターのタイプをサイン波に設定
+
+//     oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+
+//     oscillator.connect(audioContext.destination); //オシレーターをオーディオの出力に接続する
+//     oscillator.start(); //オシレータを再生する
+//     oscillators[key] = oscillator; // オシレータをosillatorsオブジェクトに保存
+
+//     //入力された音をコンソールに表示
+//     console.log("Input frequency:",frequency.toFixed(2)); 
+
+//     // 和音に周波数を追加する
+//     chord.push(frequency.toFixed(2));
+
+// }
+
+//音を出す関数
+function startPlayingFrequency(frequency,key) {
+
+    //2種類の音を作る
+    var oscillator = audioContext.createOscillator();
+    var oscillator2 = audioContext.createOscillator();
+
+    //2種類目の音は1オクターブ上（Hzが2倍でオクターブ上）
+    oscillator.frequency.value = frequency;
+    oscillator2.frequency.value = frequency * 2;
+
+    //音量(Gain)変更フィルター
+    var gainNode = audioContext.createGain();
+    var gainNode2 = audioContext.createGain();
+
+    //音の出始める時刻を取得
+    var currentTime = audioContext.currentTime;
+
+    //音を線形に音量変化させる
+    gainNode.gain.linearRampToValueAtTime(1, currentTime);
+    gainNode.gain.linearRampToValueAtTime(0, currentTime + 0.6);
+
+    //2種類目の音は音量を小さく初めて少し長めに
+    gainNode2.gain.linearRampToValueAtTime(0.2, currentTime);
+    gainNode2.gain.linearRampToValueAtTime(0, currentTime + 0.6);
+
+    //まず音量変更フィルタに作った音を通す
+    oscillator.connect(gainNode);
+    oscillator2.connect(gainNode2);
+    var audioDestination = audioContext.destination;
+
+    //フィルタに通った音をスピーカーに接続
+    gainNode.connect(audioDestination);
+    gainNode2.connect(audioDestination);
+    oscillator.start = oscillator.start || oscillator.noteOn;
+    oscillator2.start = oscillator2.start || oscillator2.noteOn;
+    oscillator.start();
+    oscillator2.start();
+
+    oscillators[key] = oscillator,oscillator2; // オシレータをosillatorsオブジェクトに保存
 
     //入力された音をコンソールに表示
     console.log("Input frequency:",frequency.toFixed(2)); 
@@ -28,6 +81,8 @@ function startPlayingFrequency(frequency, key) {
     chord.push(frequency.toFixed(2));
 
 }
+
+
 
 //和音が鳴らされているかどうかをチェックする関数
 function checkChord(){
@@ -99,22 +154,6 @@ function updateKeyboardLayout(division) { //引数divisionを受け取る(キー
     }
 }
 
-//キーがクリック（またはタップ）されると特定の周波数の音を再生
-//オシレーターを作成し、周波数を設定し、オーディオコンテキストの宛先に接続し、再生を開始し、0.5秒後に停止
-function playFrequency(frequency, keyIndex) {
-    
-    const oscillator = audioContext.createOscillator();
-    oscillator.type = 'sine'; //サイン波
-    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-    oscillator.connect(audioContext.destination);
-    oscillator.start(); //再生
-    oscillator.stop(audioContext.currentTime + 0.5); //0.5秒後に停止
-    highlightKey(keyIndex); //再生されたキーを強調表示する
-
-    checkChord(); //和音が鳴らされたかをチェック
-
-}
-
 ////キーボード制御
 //キーが押されたときに呼び出される関数
 function handleKeyDown(event) { 
@@ -128,7 +167,7 @@ function handleKeyDown(event) {
     const noteDiv = document.getElementsByClassName('note')[keyIndex];
     noteDiv.style.background = 'lightgray'; // 背景色を変更
     noteDiv.style.border = 'solid black 2px'; // 枠の色を変更
-    
+
 }
 
 //キーが離されたときに呼び出される関数
